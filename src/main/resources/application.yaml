@@ -1,0 +1,27 @@
+spring:
+  rabbitmq:
+    listener:
+      type: stream
+      stream:
+        native-listener: true
+    stream:
+      host: ${RABBIT_HOST:localhost}
+      port: ${RABBIT_PORT:5672}
+      username: guest
+      password: guest
+  cloud:
+    function:
+      definition: testConsumer
+    stream:
+      rabbit:
+        bindings:
+          testConsumer-in-0:
+            consumer:
+              containerType: stream
+
+      bindings:
+        testConsumer-in-0:
+          group: demo
+          destination: test
+        testProducer-out-0:
+          destination: test
