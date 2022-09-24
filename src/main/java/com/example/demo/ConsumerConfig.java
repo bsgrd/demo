@@ -1,17 +1,22 @@
 package com.example.demo;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import com.rabbitmq.stream.OffsetSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.cloud.stream.config.ListenerContainerCustomizer;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
+import org.springframework.rabbit.stream.listener.StreamListenerContainer;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 @Component
 public class ConsumerConfig {
-
-    private static final Logger LOGGER = Logger.getLogger(ConsumerConfig.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerConfig.class.getName());
 
     private final StreamBridge streamBridge;
 
@@ -19,15 +24,22 @@ public class ConsumerConfig {
         this.streamBridge = streamBridge;
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void doStuff() {
-        LOGGER.info("Sending message..");
-        streamBridge.send("testProducer-out-0", "testing..");
+        LOGGER.info("Sending message...");
+        for(int i = 0; i <= 10; i++) {
+            streamBridge.send("testProducer-out-0", "testing " + i);
+        }
     }
 
     @Bean
-    public Consumer<Flux<String>> testConsumer() {
-        return flux -> flux.doOnEach(LOGGER::info);
+    public Supplier<IntStream> testSupplier() {
+        return () -> IntStream.range(0, 10);
+    }
+
+    @Bean
+    public Consumer<String> testConsumer() {
+        return LOGGER::info;
     }
 
 }

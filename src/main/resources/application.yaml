@@ -4,11 +4,13 @@ spring:
       type: stream
       stream:
         native-listener: true
+        offset: first
+    host: rabbitmq
+    port: 5672
     stream:
-      host: ${RABBIT_HOST:localhost}
-      port: ${RABBIT_PORT:5672}
-      username: guest
-      password: guest
+      host: rabbitmq
+      port: 5552
+
   cloud:
     function:
       definition: testConsumer
@@ -16,12 +18,16 @@ spring:
       rabbit:
         bindings:
           testConsumer-in-0:
+            offset: first
             consumer:
               containerType: stream
-
+              offset: first
+              stream:
+                offset: first
       bindings:
         testConsumer-in-0:
           group: demo
           destination: test
-        testProducer-out-0:
+          offsetType: first
+        testSupplier-out-0:
           destination: test
