@@ -1,9 +1,11 @@
 package com.example.demo;
 
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import com.rabbitmq.stream.OffsetSpecification;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
@@ -24,17 +26,12 @@ public class ConsumerConfig {
         this.streamBridge = streamBridge;
     }
 
-    //@PostConstruct
+    @PostConstruct
     public void doStuff() {
         LOGGER.info("Sending message...");
         for(int i = 0; i <= 10; i++) {
-            streamBridge.send("testProducer-out-0", "testing " + i);
+            streamBridge.send("testProducer-out-0", "testing " + LocalDateTime.now());
         }
-    }
-
-    @Bean
-    public Supplier<IntStream> testSupplier() {
-        return () -> IntStream.range(0, 10);
     }
 
     @Bean
